@@ -39,7 +39,7 @@
 <div class="actions"><button class="btn light" id="newBlog">+ Blog post</button><button class="btn light" id="newCourse">+ Course</button></div>
 <div id="contentList" class="list"><p class="hint">Connect and sign in to load drafts and published content.</p></div>
 </aside>
-<main class="panel">
+<main id="adminMain" class="panel hidden">
 <div class="topline"><div><h2 id="formHeading">Create something useful</h2><p class="hint">Draft first, preview, then publish when ready.</p></div><span id="statePill" class="pill draft">Draft</span></div>
 <form id="contentForm">
 <input id="contentId" type="hidden">
@@ -144,7 +144,7 @@
    const {data:factor,error:enrollError}=await client.auth.mfa.enroll({factorType:'totp',friendlyName:'StaySecure Admin — Microsoft Authenticator'});
    if(enrollError) throw enrollError;
    mfaFactorId=factor.id;
-   $('mfaQr').src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(factor.totp.qr_code);
+   $('mfaQr').src=factor.totp.qr_code;
    $('mfaSecret').textContent=factor.totp.secret;
    $('mfaQrWrap').classList.remove('hidden'); showMfa(true);
    setStatus('Authenticator setup started. Scan the QR code and verify a code to finish enrollment.');
@@ -177,7 +177,7 @@
   return user;
  }
  async function refresh() {
-  await requireAdmin();
+  await requireAdmin(); $('adminMain').classList.remove('hidden');
   const {data,error}=await client.from('content_items').select('*').order('updated_at',{ascending:false});
   if(error) throw error;
   $('contentList').innerHTML='';
@@ -227,7 +227,7 @@
  $('signIn').addEventListener('click',guard(async()=>{if(!client)await connect();const {error}=await client.auth.signInWithPassword({email:val('email'),password:$('password').value});if(error)throw error;await beginMfa();}));
  $('verifyMfa').addEventListener('click',guard(verifyMfa));
  $('startMfaSetup').addEventListener('click',guard(beginMfa));
- $('signOut').addEventListener('click',guard(async()=>{if(client)await client.auth.signOut();session=null;mfaFactorId=null;mfaChallengeId=null;showMfa(false);setForm();$('contentList').innerHTML='<p class="hint">Signed out.</p>';setStatus('Signed out.');}));
+ $('signOut').addEventListener('click',guard(async()=>{if(client)await client.auth.signOut();session=null;mfaFactorId=null;mfaChallengeId=null;showMfa(false);$('adminMain').classList.add('hidden');setForm();$('contentList').innerHTML='<p class="hint">Signed out.</p>';setStatus('Signed out.');}));
  $('refresh').addEventListener('click',guard(refresh));
  $('newBlog').addEventListener('click',()=>{setForm({kind:'blog',status:'draft',access_tier:'free',category:'Security Basics',author:'StaySecure Team'});});
  $('newCourse').addEventListener('click',()=>{setForm({kind:'course',status:'draft',access_tier:'free',category:'Cybersecurity Fundamentals',author:'StaySecure Team'});});
