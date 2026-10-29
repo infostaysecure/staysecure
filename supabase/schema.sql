@@ -292,3 +292,24 @@ cross join (values
 ) as l(slug,title,body,position,minutes)
 where c.slug = l.slug and c.kind = 'course'
   and not exists (select 1 from public.content_lessons old where old.course_id = c.id and old.position = l.position);
+
+insert into public.content_items
+  (kind, slug, title, excerpt, category, author, access_tier, status, estimated_minutes, published_at, body)
+values
+('blog','protect-your-personal-information','Protecting Your Personal Information Online','Review privacy settings, limit oversharing, and reduce the amount of personal data exposed online.','Privacy Basics','StaySecure Team','free','published',5,now(),
+'## Share less by default
+
+Personal details can help scammers make convincing messages or attempt account recovery. Review what is public on social profiles and avoid posting information such as travel plans, full birth dates, or answers to common security questions.
+
+## Review app permissions
+
+Check which apps can access your location, contacts, microphone, camera, and photos. Turn off permissions that are not needed for the app to work.
+
+## Watch for unexpected data requests
+
+Before sharing personal or financial information, confirm why it is needed and whether the request is legitimate. Use official websites and trusted contact channels.
+
+## Make privacy a habit
+
+Review privacy settings periodically, remove unused accounts, and use unique passwords with multi-factor authentication on important services.')
+on conflict (slug) do nothing;
