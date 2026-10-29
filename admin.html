@@ -22,6 +22,18 @@
 <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div>
 <div class="actions"><button class="btn green" id="signIn">Sign in</button><button class="btn light" id="signOut">Sign out</button></div>
 <div id="authStatus" class="status">Not connected.</div>
+<div id="mfaPanel" class="status hidden" style="margin-top:12px">
+  <strong id="mfaHeading">Administrator verification required</strong>
+  <p id="mfaInstructions">Use Microsoft Authenticator to verify your identity.</p>
+  <div id="mfaQrWrap" class="hidden" style="text-align:center;background:#fff;padding:12px;border-radius:8px;margin:12px 0">
+    <img id="mfaQr" alt="Microsoft Authenticator enrollment QR code" style="max-width:220px;width:100%">
+    <p class="hint">Scan this QR code with Microsoft Authenticator.</p>
+    <p class="hint">Or enter this setup key manually:</p><code id="mfaSecret" style="overflow-wrap:anywhere"></code>
+  </div>
+  <div class="field"><label for="mfaCode">6-digit authenticator code</label><input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456"></div>
+  <div class="actions"><button class="btn green" id="verifyMfa" type="button">Verify code</button><button class="btn light hidden" id="startMfaSetup" type="button">Set up authenticator</button></div>
+  <p class="hint">Admin content stays locked until MFA verification succeeds.</p>
+</div>
 <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
 <div class="topline"><h2 style="margin:0">Your content</h2><button class="btn light" id="refresh">Refresh</button></div>
 <div class="actions"><button class="btn light" id="newBlog">+ Blog post</button><button class="btn light" id="newCourse">+ Course</button></div>
@@ -93,10 +105,72 @@
   localStorage.setItem('staysecure_supabase_url',url); localStorage.setItem('staysecure_supabase_key',key);
   setStatus('Connected to Supabase. Sign in with your administrator account.');
  }
+ let mfaFactorId = null, mfaChallengeId = null, mfaMode = 'challenge';
+ function showMfa(show=true) { $('mfaPanel').classList.toggle('hidden',!show); }
+ async function assuranceLevel() {
+  const {data,error}=await client.auth.mfa.getAuthenticatorAssuranceLevel();
+  if(error) throw error;
+  return data;
+ }
+ async function checkAdminRole() {
+  const {data:{user},error}=await client.auth.getUser(); if(error) throw error;
+  if(!user) throw new Error('Please sign in first.');
+  const {data:profile,error:profileError}=await client.from('profiles').select('role').eq('user_id',user.id).maybeSingle();
+  if(profileError) throw profileError;
+  if(!profile || profile.role!=='admin') throw new Error('This account is not an editor yet. Follow the admin setup steps in README.md.');
+  return user;
+ }
+ async function beginMfa() {
+  await checkAdminRole();
+  const level = await assuranceLevel();
+  if(level.currentLevel === 'aal2') {
+   showMfa(false); await refresh(); setStatus('Signed in with MFA. Content editor ready.','ok'); return;
+  }
+  const {data,error}=await client.auth.mfa.listFactors(); if(error) throw error;
+  const verified=(data.totp||[]).find(f=>f.status==='verified');
+  if(verified) {
+   mfaMode='challenge'; mfaFactorId=verified.id;
+   const {data:challenge,error:challengeError}=await client.auth.mfa.challenge({factorId:mfaFactorId});
+   if(challengeError) throw challengeError;
+   mfaChallengeId=challenge.id;
+   $('mfaHeading').textContent='Verify your administrator sign-in';
+   $('mfaInstructions').textContent='Open Microsoft Authenticator and enter the current 6-digit code for StaySecure.';
+   $('mfaQrWrap').classList.add('hidden'); $('startMfaSetup').classList.add('hidden');
+   showMfa(true); setStatus('Password accepted. Complete MFA to open the editor.');
+  } else {
+   mfaMode='enroll'; $('mfaHeading').textContent='Set up Microsoft Authenticator';
+   $('mfaInstructions').textContent='Scan the QR code in Microsoft Authenticator, then enter the 6-digit code it generates.';
+   $('startMfaSetup').classList.add('hidden');
+   const {data:factor,error:enrollError}=await client.auth.mfa.enroll({factorType:'totp',friendlyName:'StaySecure Admin — Microsoft Authenticator'});
+   if(enrollError) throw enrollError;
+   mfaFactorId=factor.id;
+   $('mfaQr').src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(factor.totp.qr_code);
+   $('mfaSecret').textContent=factor.totp.secret;
+   $('mfaQrWrap').classList.remove('hidden'); showMfa(true);
+   setStatus('Authenticator setup started. Scan the QR code and verify a code to finish enrollment.');
+  }
+ }
+ async function verifyMfa() {
+  const code=val('mfaCode').replace(/\s/g,'');
+  if(!/^\d{6}$/.test(code)) throw new Error('Enter the current 6-digit code from Microsoft Authenticator.');
+  if(!mfaFactorId) throw new Error('Start authenticator setup or sign in again to request a code.');
+  if(mfaMode==='enroll') {
+   const {data:challenge,error:challengeError}=await client.auth.mfa.challenge({factorId:mfaFactorId});
+   if(challengeError) throw challengeError; mfaChallengeId=challenge.id;
+  }
+  const {error}=await client.auth.mfa.verify({factorId:mfaFactorId,challengeId:mfaChallengeId,code});
+  if(error) throw error;
+  $('mfaCode').value=''; showMfa(false);
+  const level=await assuranceLevel();
+  if(level.currentLevel!=='aal2') throw new Error('MFA code verified, but the session has not reached the required security level. Sign out and sign in again.');
+  await refresh(); setStatus('MFA verified. Content editor ready.','ok');
+ }
  async function requireAdmin() {
   if(!client) await connect();
   const {data:{user},error}=await client.auth.getUser(); if(error) throw error;
   if(!user) throw new Error('Please sign in first.');
+  const level=await assuranceLevel();
+  if(level.currentLevel!=='aal2') throw new Error('Administrator MFA is required. Sign in and complete the authenticator challenge first.');
   const {data:profile,error:profileError}=await client.from('profiles').select('role').eq('user_id',user.id).maybeSingle();
   if(profileError) throw profileError;
   if(!profile || profile.role!=='admin') throw new Error('This account is not an editor yet. Follow the admin setup steps in README.md.');
@@ -150,8 +224,10 @@
  function guard(fn){return async e=>{if(e)e.preventDefault();try{await fn();}catch(err){setStatus(err.message || String(err),'error');}};}
  $('connect').addEventListener('click',guard(connect));
  $('disconnect').addEventListener('click',()=>{localStorage.removeItem('staysecure_supabase_url');localStorage.removeItem('staysecure_supabase_key');client=null;$('projectUrl').value='';$('publicKey').value='';setStatus('Saved connection settings removed from this browser.');});
- $('signIn').addEventListener('click',guard(async()=>{if(!client)await connect();const {error}=await client.auth.signInWithPassword({email:val('email'),password:$('password').value});if(error)throw error;await refresh();setStatus('Signed in. Content editor ready.','ok');}));
- $('signOut').addEventListener('click',guard(async()=>{if(client)await client.auth.signOut();session=null;setForm();$('contentList').innerHTML='<p class="hint">Signed out.</p>';setStatus('Signed out.');}));
+ $('signIn').addEventListener('click',guard(async()=>{if(!client)await connect();const {error}=await client.auth.signInWithPassword({email:val('email'),password:$('password').value});if(error)throw error;await beginMfa();}));
+ $('verifyMfa').addEventListener('click',guard(verifyMfa));
+ $('startMfaSetup').addEventListener('click',guard(beginMfa));
+ $('signOut').addEventListener('click',guard(async()=>{if(client)await client.auth.signOut();session=null;mfaFactorId=null;mfaChallengeId=null;showMfa(false);setForm();$('contentList').innerHTML='<p class="hint">Signed out.</p>';setStatus('Signed out.');}));
  $('refresh').addEventListener('click',guard(refresh));
  $('newBlog').addEventListener('click',()=>{setForm({kind:'blog',status:'draft',access_tier:'free',category:'Security Basics',author:'StaySecure Team'});});
  $('newCourse').addEventListener('click',()=>{setForm({kind:'course',status:'draft',access_tier:'free',category:'Cybersecurity Fundamentals',author:'StaySecure Team'});});
