@@ -22,7 +22,8 @@ The private editor is `admin.html`. It uses Supabase Auth and Postgres so drafts
 
 ## Important current limitations
 
-- The editor is an initial CMS foundation. The public homepage still has showcase cards; public dynamic course/blog listing and full lesson-reader pages are the next integration step.
+- `courses.html` lists published free courses, `blog.html` provides searchable published articles, and `content.html?slug=...` displays an article or course with its lessons. The homepage links to these pages.
+- The SQL schema seeds two free starter courses with lessons and six free starter blog articles. You can edit these drafts/content through Content Studio after the database is connected.
 - Premium items are not exposed by the public read policy. Do not sell premium content until authentication entitlements and payment webhooks have been implemented and tested.
 - Do not put a Supabase service-role key or Stripe secret key in any browser file.
 - Free-tier Supabase projects have usage limits and may pause during extended inactivity. Review current plan details before launch.
