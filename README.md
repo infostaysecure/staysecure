@@ -9,8 +9,8 @@ The private editor is `admin.html`. It uses Supabase Auth and Postgres so drafts
 1. Create a Supabase project on the free tier.
 2. Open **SQL Editor** in Supabase and run all of `supabase/schema.sql`.
 3. Open **Project Settings → API** (or the project's API keys page) and copy the Project URL and the publishable key (or legacy anon key). Never use the `service_role` / secret key in browser code.
-4. In `supabase/config.js`, replace the two placeholder values. Alternatively, enter the URL and public key directly in the editor; those values are saved only in your current browser.
-5. Deploy this branch to a Cloudflare Pages preview or test it on a local static web server. Open `admin.html`, connect, then sign up your admin user using Supabase Authentication. For the first admin, you can temporarily enable sign-up in Supabase Auth and create your account through a Supabase Auth client or dashboard-supported invite.
+4. In `supabase/config.js`, replace the two placeholder values with your project URL and public publishable/anon key. The public catalog and article pages read this file; the editor can also accept these values for this browser session.
+5. Deploy this branch to a Cloudflare Pages preview or test it on a local static web server. In Supabase **Authentication → Users**, use **Add user** or an invite to create your own account. Then open `admin.html` and connect with the project URL and public key.
 6. In Supabase **Authentication → Users**, copy your account UUID. In SQL Editor run:
    ```sql
    insert into public.profiles (user_id, display_name, role)
