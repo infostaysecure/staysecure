@@ -19,6 +19,47 @@ footer{background:#041323;color:#d3e2ef;border-top:1px solid var(--line);padding
 @media(max-width:1050px){.hero-visual{right:1%;opacity:.38}.hero-copy{position:relative;z-index:1}.section-grid{grid-template-columns:1fr;gap:24px}.section-intro{max-width:600px}.benefit{padding:8px 14px}.benefit p{font-size:11px}}
 @media(max-width:760px){.wrap{width:min(100% - 36px,var(--max))}header{height:auto;min-height:68px}.nav{flex-wrap:wrap;padding:12px 0;gap:12px}.brand{font-size:23px}.brand-mark{width:30px;height:34px}.navlinks{order:3;width:100%;justify-content:space-between;gap:12px;padding:8px 0 2px;font-size:12px}.nav-actions{gap:10px}.nav-actions .outline-btn{padding:9px 12px;font-size:12px}.search{display:none}.hero-inner{min-height:360px;padding:48px 0}.hero h1{font-size:clamp(36px,9vw,48px);letter-spacing:-1.5px}.hero-visual{right:-90px;opacity:.22}.benefit-grid{grid-template-columns:repeat(2,1fr);gap:12px;padding:20px 0}.benefit{border:0;padding:8px 0}.benefit:first-child{padding-left:0}.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.blog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-top{flex-wrap:wrap}.footer-links{order:3;width:100%;justify-content:space-between}.cta-inner{align-items:flex-start;flex-direction:column}}
 @media(max-width:480px){.course-grid,.blog-grid{grid-template-columns:1fr}.benefit-grid{grid-template-columns:1fr 1fr}.benefit{gap:10px}.benefit-icon{width:32px;min-width:32px}.benefit-icon svg{width:30px;height:30px}.benefit p{font-size:10px}.meta{gap:10px}.section-intro h2{font-size:26px}.copyright{flex-direction:column;gap:8px}.hero p{font-size:14px}}
+
+/* Approved homepage refinement: hero laptop + five learning shields */
+.hero-copy{max-width:620px;position:relative;z-index:1}
+.hero-visual{right:2%;width:570px;height:285px;opacity:1;display:flex;align-items:center;justify-content:center;gap:24px;transform:translateY(-50%)}
+.laptop-scene{width:310px;position:relative;filter:drop-shadow(0 12px 28px #0008)}
+.laptop-screen{height:185px;border:7px solid #173b59;border-bottom-width:10px;border-radius:12px 12px 5px 5px;background:linear-gradient(145deg,#0b2946,#061525);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:inset 0 0 28px #0d9dd533}
+.laptop-screen:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,#12dbe51c 50%,transparent 70%)}
+.screen-glow{width:95px;height:110px;display:grid;place-items:center;color:#36e6bd;filter:drop-shadow(0 0 16px #18dfba99);z-index:1}
+.screen-glow svg{width:100%;height:100%}
+.screen-lines{position:absolute;right:17px;bottom:18px;display:grid;gap:6px;width:52px}
+.screen-lines i{height:3px;border-radius:4px;background:#168bd0;opacity:.65}
+.screen-lines i:nth-child(2){width:75%}.screen-lines i:nth-child(3){width:48%}
+.laptop-base{height:12px;width:340px;margin-left:-15px;background:linear-gradient(#91a9ba,#34536d 65%,#18334c);clip-path:polygon(4% 0,96% 0,100% 100%,0 100%);border-radius:0 0 8px 8px}
+.shield-path{display:flex;flex-direction:column;gap:7px;position:relative;padding-left:17px}
+.shield-path:before{content:"";position:absolute;left:32px;top:17px;bottom:17px;width:2px;background:linear-gradient(#d94c58,#168bd0,#22c98c)}
+.shield-level{display:flex;align-items:center;gap:10px;position:relative;z-index:1;color:#d4e4f2}
+.shield-level small{font-size:10px;white-space:nowrap;letter-spacing:.2px}
+.level-shield{width:30px;height:34px;display:grid;place-items:center;clip-path:polygon(50% 0,95% 17%,91% 65%,50% 100%,9% 65%,5% 17%);background:#168bd0;color:#fff;font-size:11px;font-weight:800;border:0}
+.level-shield.beginner{background:#d94c58}
+.shield-level:nth-child(3) .level-shield{background:#398db9}
+.shield-level:nth-child(4) .level-shield{background:#229b78}
+.shield-level.expert{color:#8fffd0;font-weight:800}
+.shield-level.expert .level-shield{width:39px;height:44px;background:#20c98b;color:#042b26;font-size:13px;box-shadow:0 0 18px #20e6a888}
+.blog-section{background:#eaf5fb;color:#092343}
+.blog-section .section-intro h2{color:#092343}
+.blog-section .section-intro p{color:#526b88}
+.blog-card{background:#fff;border:1px solid #d5e7f2;box-shadow:0 5px 18px #0c31540b}
+.blog-body .date{color:#1683a5}
+.blog-body h3{color:#092343}
+.blog-body p{color:#526b88}
+.blog-body a{color:#087c65}
+.blog-art{background:radial-gradient(circle at 50% 50%,#b9e5f5,#dceff8 76%)}
+.blog-art svg{color:#087c8e;filter:drop-shadow(0 0 8px #52c5d9)}
+.blog-card:nth-child(2) .blog-art{background:radial-gradient(circle at center,#f7dce8,#eaf1f8 80%)}
+.blog-card:nth-child(2) .blog-art svg{color:#b53c69}
+.blog-card:nth-child(3) .blog-art{background:radial-gradient(circle at center,#cde8f7,#eaf5fb 80%)}
+.blog-card:nth-child(3) .blog-art svg{color:#087c8e}
+@media(max-width:1050px){.hero-visual{right:-85px;opacity:.42}.hero-copy{max-width:620px}}
+@media(max-width:760px){.hero-inner{padding:42px 0 280px}.hero-visual{top:auto;bottom:12px;right:50%;transform:translateX(50%);width:min(570px,100%);height:245px;opacity:.95;gap:12px}.laptop-scene{width:245px}.laptop-screen{height:145px}.laptop-base{width:270px}.screen-glow{width:78px;height:90px}.shield-path{gap:4px}.shield-level small{font-size:9px}}
+@media(max-width:480px){.hero-inner{padding-bottom:255px}.hero-visual{transform:translateX(50%) scale(.82);transform-origin:bottom center;bottom:4px;width:570px}.blog-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -30,7 +71,7 @@ footer{background:#041323;color:#d3e2ef;border-top:1px solid var(--line);padding
  </div>
 </header>
 <main>
-<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><div class="eyebrow">Cybersecurity education &amp; resources</div><h1>Learn Today.<span>Stay secure in a connected world.</span></h1><p>Practical cybersecurity courses, expert insights, and resources to help you build skills, make better decisions, and stay secure in a connected world.</p><div class="hero-buttons"><a class="primary-btn" href="courses.html">Explore Courses <span aria-hidden="true">→</span></a><a class="outline-btn" href="blog.html">Read the Latest Blog <span aria-hidden="true">→</span></a></div></div><div class="hero-visual" aria-hidden="true"><div class="orb"><svg class="bigshield" viewBox="0 0 100 115" fill="none"><path d="M50 5 89 20v29c0 27-16 46-39 60C27 95 11 76 11 49V20L50 5Z" stroke="currentColor" stroke-width="4"/><rect x="36" y="45" width="28" height="24" rx="4" stroke="currentColor" stroke-width="4"/><path d="M42 45v-8a8 8 0 0 1 16 0v8" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="56" r="3" fill="currentColor"/></svg></div></div></div></section>
+<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><div class="eyebrow">Cybersecurity education &amp; resources</div><h1>Learn Today.<span>Stay secure in a connected world.</span></h1><p>Practical cybersecurity courses, expert insights, and resources to help you build skills, make better decisions, and stay secure in a connected world.</p><div class="hero-buttons"><a class="primary-btn" href="courses.html">Explore Courses <span aria-hidden="true">→</span></a><a class="outline-btn" href="blog.html">Read the Latest Blog <span aria-hidden="true">→</span></a></div></div><div class="hero-visual" aria-hidden="true"><div class="laptop-scene"><div class="laptop-screen"><div class="screen-glow"><svg viewBox="0 0 100 115" fill="none"><path d="M50 5 89 20v29c0 27-16 46-39 60C27 95 11 76 11 49V20L50 5Z" stroke="currentColor" stroke-width="4"/><rect x="36" y="45" width="28" height="24" rx="4" stroke="currentColor" stroke-width="4"/><path d="M42 45v-8a8 8 0 0 1 16 0v8" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="56" r="3" fill="currentColor"/></svg></div><div class="screen-lines"><i></i><i></i><i></i></div></div><div class="laptop-base"></div></div><div class="shield-path"><div class="shield-level"><span class="level-shield beginner">1</span><small>Beginner</small></div><div class="shield-level"><span class="level-shield">2</span><small>Learning</small></div><div class="shield-level"><span class="level-shield">3</span><small>Practiced</small></div><div class="shield-level"><span class="level-shield">4</span><small>Advanced</small></div><div class="shield-level expert"><span class="level-shield">5</span><small>Expert</small></div></div></div></div></section>
 <section class="benefits" id="about"><div class="wrap benefit-grid">
 <div class="benefit"><span class="benefit-icon"><svg viewBox="0 0 48 48" fill="none"><path d="m5 17 19-10 19 10-19 10L5 17Z" stroke="currentColor" stroke-width="2.5"/><path d="M13 22v10c7 7 15 7 22 0V22M43 18v13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></span><div><strong>Quality Courses</strong><p>Beginner to advanced, with real-world skills and practical examples.</p></div></div>
 <div class="benefit"><span class="benefit-icon"><svg viewBox="0 0 48 48" fill="none"><path d="M13 5h16l9 9v29H13V5Z" stroke="currentColor" stroke-width="2.5"/><path d="M29 5v10h9M19 23h13M19 30h13" stroke="currentColor" stroke-width="2.5"/></svg></span><div><strong>Expert Blogs</strong><p>Timely articles, threat analysis, and security best practices.</p></div></div>
